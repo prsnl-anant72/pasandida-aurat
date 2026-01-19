@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>HBD love</title>	    
+    <link type="text/css" rel="stylesheet" href="file/default.css">
+    <script type="text/javascript" src="file/jquery.min.js"></script>
+    <script type="text/javascript" src="file/jscex.min.js"></script>
+    <script type="text/javascript" src="file/jscex-parser.js"></script>
+    <script type="text/javascript" src="file/jscex-jit.js"></script>
+    <script type="text/javascript" src="file/jscex-builderbase.min.js"></script>
+    <script type="text/javascript" src="file/jscex-async.min.js"></script>
+    <script type="text/javascript" src="file/jscex-async-powerpack.min.js"></script>
+    <script type="text/javascript" src="file/function.js" charset="utf-8"></script>
+    <script type="text/javascript" src="file/love.js" charset="utf-8"></script>
+    <script>
+        function playAudio() {
+            var audio = document.getElementById("myAudio");
+            audio.play();
+        }
+    </script>
+</head>
+<body>
+    <div id="main">
+        <div id="error"><a href="http://www.google.cn/chrome/intl/zh-CN/landing_chrome.html?hl=zh-CN&brand=CHMI">Chrome</a> (<a href="http://firefox.com.cn/download/">Firefox</a>)</div>
+        <audio autoplay="autoplay" height="100" width="100" id="myAudio">
+            <source src="her.mp3" type="audio/mp3" />
+            <embed height="100" width="100" src="her.mp3" />
+        </audio>
+        <div id="wrap">
+            <canvas id="canvas" width="1100" height="680"></canvas>
+        </div>
+
+        <!-- Background Image Wall -->
+        <div id="background-wall"></div>
+
+        <!-- Birthday Countdown Section -->
+        <div id="birthday-countdown-section">
+            <div id="countdown-container">
+                <div id="countdown-box">
+                    <div id="countdown-title">Counting down to our special day...</div>
+                    <div id="countdown-timer">--:--:--:--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lifetime Counter Section -->
+        <div id="lifetime-section">
+            <div id="lifetime-counter" class="glass-box">
+                <div id="lifetime-title">Our Beautiful Journey Together</div>
+                <div id="lifetime-timer">-- days -- hours -- minutes -- seconds</div>
+                <div id="lifetime-quote">"From this minute, the world became lucky ✨"</div>
+            </div>
+        </div>
+
+        <!-- Personal Message Section -->
+        <div id="message-section">
+            <div id="personal-message" class="glass-box">
+                <h2>I love you so much, Kittu</h2>
+                <p>You are my everything — my partner, my wife, my best friend, my safe place.</p>
+                <p>You are my betu, my muma, my daddy, my home.</p>
+                <p>In you, I found my world, my peace, and my forever.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        var canvas = $('#canvas');
+		
+        if (!canvas[0].getContext) {
+            $("#error").show();
+            return false;
+        }
+
+        var width = canvas.width();
+        var height = canvas.height();        
+        canvas.attr("width", width);
+        canvas.attr("height", height);
+
+        var opts = {
+            seed: {
+                x: width / 2 - 20,
+                color: "rgb(190, 26, 37)",
+                scale: 2
+            },
+            branch: [
+                [535, 680, 570, 250, 500, 200, 30, 100, [
+                    [540, 500, 455, 417, 340, 400, 13, 100, [
+                        [450, 435, 434, 430, 394, 395, 2, 40]
+                    ]],
+                    [550, 445, 600, 356, 680, 345, 12, 100, [
+                        [578, 400, 648, 409, 661, 426, 3, 80]
+                    ]],
+                    [539, 281, 537, 248, 534, 217, 3, 40],
+                    [546, 397, 413, 247, 328, 244, 9, 80, [
+                        [427, 286, 383, 253, 371, 205, 2, 40],
+                        [498, 345, 435, 315, 395, 330, 4, 60]
+                    ]],
+                    [546, 357, 608, 252, 678, 221, 6, 100, [
+                        [590, 293, 646, 277, 648, 271, 2, 80]
+                    ]]
+                ]] 
+            ],
+            bloom: {
+                num: 700,
+                width: 1080,
+                height: 650,
+            },
+            footer: {
+                width: 1200,
+                height: 5,
+                speed: 10,
+            }
+        }
+
+        var tree = new Tree(canvas[0], width, height, opts);
+        var seed = tree.seed;
+        var foot = tree.footer;
+        var hold = 1;
+
+        canvas.click(function(e) {
+            playAudio();
+            var offset = canvas.offset(), x, y;
+            x = e.pageX - offset.left;
+            y = e.pageY - offset.top;
+            if (seed.hover(x, y)) {
+                hold = 0; 
+                canvas.unbind("click");
+                canvas.unbind("mousemove");
+                canvas.removeClass('hand');
+            }
+        }).mousemove(function(e) {
+            var offset = canvas.offset(), x, y;
+            x = e.pageX - offset.left;
+            y = e.pageY - offset.top;
+            canvas.toggleClass('hand', seed.hover(x, y));
+        });
+
+        var seedAnimate = eval(Jscex.compile("async", function () {
+            seed.draw();
+            while (hold) {
+                $await(Jscex.Async.sleep(10));
+            }
+            while (seed.canScale()) {
+                seed.scale(0.95);
+                $await(Jscex.Async.sleep(10));
+            }
+            while (seed.canMove()) {
+                seed.move(0, 2);
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+        }));
+
+        var growAnimate = eval(Jscex.compile("async", function () {
+            do {
+                tree.grow();
+                $await(Jscex.Async.sleep(10));
+            } while (tree.canGrow());
+        }));
+
+        var flowAnimate = eval(Jscex.compile("async", function () {
+            do {
+                tree.flower(2);
+                $await(Jscex.Async.sleep(10));
+            } while (tree.canFlower());
+        }));
+
+        var moveAnimate = eval(Jscex.compile("async", function () {
+            tree.snapshot("p1", 240, 0, 610, 680);
+            while (tree.move("p1", 500, 0)) {
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+            foot.draw();
+            tree.snapshot("p2", 500, 0, 610, 680);
+
+            canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
+            canvas.css("background", "#ffe");
+            $await(Jscex.Async.sleep(300));
+            canvas.css("background", "none");
+        }));
+
+        var runAsync = eval(Jscex.compile("async", function () {
+            $await(seedAnimate());
+            $await(growAnimate());
+            $await(flowAnimate());
+            $await(moveAnimate());
+            // Animation complete - initialize new features
+            initializeAfterAnimation();
+        }));
+
+        runAsync().start();
+    })();
+
+    // Initialize features after animation completes
+    function initializeAfterAnimation() {
+        // Make page scrollable
+        document.body.style.overflow = 'auto';
+
+        // Initialize background wall
+        initializeBackgroundWall();
+
+        // Show all sections
+        document.getElementById('birthday-countdown-section').style.display = 'flex';
+        document.getElementById('lifetime-section').style.display = 'flex';
+        document.getElementById('message-section').style.display = 'flex';
+
+        // Check current date and show appropriate content
+        checkDateAndShowContent();
+
+        // Start lifetime counter
+        startLifetimeCounter();
+    }
+
+    // Initialize background image wall
+    function initializeBackgroundWall() {
+        const images = [
+            'IMG_20240914_145307_081.jpg', 'IMG_20241004_005327.jpg', 'IMG_20250927_235139.jpg',
+            'IMG_20251111_024649_972.jpg', 'IMG_8964.JPG', 'IMG_8970.JPG', 'IMG_8972.JPG',
+            'IMG_8973.JPG', 'IMG_8974.JPG', 'IMG_8975.JPG', 'IMG_8976.JPG', 'IMG_8977.JPG',
+            'IMG_8978.JPG', 'IMG_8979.JPG', 'IMG_8980.JPG', 'IMG_8981.JPG', 'IMG_8982.JPG',
+            'IMG_8983.JPG', 'IMG_8984.JPG', 'IMG_8985.JPG', 'IMG_8986.JPG', 'IMG_8988.JPG',
+            'IMG_8989.JPG', 'IMG_8991.JPG', 'IMG_8993.JPG', 'IMG_8994.JPG', 'IMG_8995.JPG',
+            'IMG_8997.JPG', 'IMG_8998.JPG', 'IMG_9001.JPG', 'IMG-20250928-WA0023.jpg',
+            'IMG-20260101-WA0017.jpg', 'IMG-20260101-WA0018.jpg', 'IMG-20260101-WA0019.jpg',
+            'IMG-20260101-WA0020.jpg', 'IMG-20260101-WA0021.jpg', 'Screenshot_2024_1126_012739.jpg',
+            'Screenshot_20241114_234113.jpg', 'Screenshot_20241128_092710.jpg', 'Screenshot_20241212_034139.jpg',
+            'Screenshot_20241220_160142.jpg', 'Screenshot_20251116_010400.jpg', 'Screenshot_20251116_010414.jpg',
+            'Screenshot_20251116_010530.jpg', 'Snapchat-1023667854.jpg', 'Snapchat-1065971354.jpg',
+            'Snapchat-1067327753.jpg', 'Snapchat-1168680884.jpg', 'Snapchat-1233533387.jpg',
+            'Snapchat-1278000740.jpg', 'Snapchat-129314661.jpg', 'Snapchat-1299698716.jpg',
+            'Snapchat-13024703.jpg', 'Snapchat-131344713.jpg', 'Snapchat-1320366887.jpg',
+            'Snapchat-135127213.jpg', 'Snapchat-1500076461.jpg', 'Snapchat-1559076387.jpg',
+            'Snapchat-1621140565.jpg', 'Snapchat-1687069145.jpg', 'Snapchat-1760055011.jpg',
+            'Snapchat-1783914300.jpg', 'Snapchat-1904558833.jpg', 'Snapchat-1910877959.jpg',
+            'Snapchat-1947421635.jpg', 'Snapchat-1958453054.jpg', 'Snapchat-2001403831.jpg',
+            'Snapchat-2014288782.jpg', 'Snapchat-2017656997.jpg', 'Snapchat-202941740.jpg',
+            'Snapchat-2039145760.jpg', 'Snapchat-2121670021.jpg', 'Snapchat-269292659.jpg',
+            'Snapchat-281064833.jpg', 'Snapchat-33512559.jpg', 'Snapchat-370105177.jpg',
+            'Snapchat-481170076.jpg', 'Snapchat-481915185.jpg', 'Snapchat-52517240.jpg',
+            'Snapchat-61710039.jpg', 'Snapchat-636939926.jpg', 'Snapchat-67586396.jpg',
+            'Snapchat-675880487.jpg', 'Snapchat-703623846.jpg', 'Snapchat-72827098.jpg',
+            'Snapchat-736293739.jpg', 'Snapchat-894252446.jpg', 'Snapchat-965614234.jpg',
+            'Snapchat-979184717.jpg'
+        ];
+
+        const backgroundWall = document.getElementById('background-wall');
+        const imagesPerRow = Math.ceil(images.length / 5);
+
+        for (let row = 0; row < 5; row++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'image-row';
+
+            // Duplicate images for infinite scroll effect
+            const rowImages = images.slice(row * imagesPerRow, (row + 1) * imagesPerRow);
+            const duplicatedImages = [...rowImages, ...rowImages, ...rowImages]; // Triple for seamless loop
+
+            duplicatedImages.forEach(imgSrc => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.alt = 'Memory';
+                rowDiv.appendChild(img);
+            });
+
+            backgroundWall.appendChild(rowDiv);
+        }
+    }
+
+    // Check date and show appropriate content
+    function checkDateAndShowContent() {
+        const today = new Date();
+        const targetDate = new Date(today.getFullYear(), 1, 9); // February 9
+
+        if (today.toDateString() === targetDate.toDateString()) {
+            // It's February 9 - show personal message
+            document.getElementById('message-section').style.display = 'flex';
+            document.getElementById('countdown-container').style.display = 'none';
+        } else {
+            // Show countdown
+            document.getElementById('countdown-container').style.display = 'block';
+            startCountdown(targetDate);
+        }
+    }
+
+    // Start countdown timer
+    function startCountdown(targetDate) {
+        const timerElement = document.getElementById('countdown-timer');
+
+        function updateCountdown() {
+            const now = new Date();
+            const diff = targetDate - now;
+
+            if (diff <= 0) {
+                checkDateAndShowContent();
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            timerElement.innerHTML = `
+                <span class="time-unit">${days} days</span>
+                <span class="time-unit">${hours} hours</span>
+                <span class="time-unit">${minutes} minutes</span>
+                <span class="time-unit">${seconds} seconds</span>
+            `;
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+
+    // Start lifetime counter
+    function startLifetimeCounter() {
+        const timerElement = document.getElementById('lifetime-timer');
+        const startDate = new Date(2006, 1, 9, 7, 7, 0); // February 9, 2006, 7:07 AM
+
+        function updateLifetime() {
+            const now = new Date();
+            const diff = now - startDate;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            timerElement.innerHTML = `${days} days ${hours} hours ${minutes} minutes ${seconds} seconds`;
+        }
+
+        updateLifetime();
+        setInterval(updateLifetime, 1000);
+    }
+    </script>
+</body>
+</html>
